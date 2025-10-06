@@ -37,7 +37,7 @@ class AuthTokenAdmin(admin.ModelAdmin):
 
 
 @admin.register(TelegramNotification)
-class TelegramNotificationAdmin(SimpleHistoryAdmin):
+class TelegramNotificationAdmin(admin.ModelAdmin):
     list_display = ["message", "from_url", "created_at", "is_sent"]
     list_filter = ["is_sent",]
     search_fields = ["message", "from_url"]
