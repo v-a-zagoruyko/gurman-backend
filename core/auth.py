@@ -1,18 +1,11 @@
 import logging
+from django.contrib.auth import get_user_model
 from rest_framework.authentication import BaseAuthentication
 from rest_framework.exceptions import AuthenticationFailed
 from main.models import AuthToken
 
 logger = logging.getLogger(__name__)
-
-
-class UserWrapper:
-    def __init__(self):
-        pass
-
-    @property
-    def is_authenticated(self):
-        return True
+User = get_user_model()
 
 
 class TokenAuthentication(BaseAuthentication):
@@ -37,5 +30,11 @@ class TokenAuthentication(BaseAuthentication):
             logger.warning("Invalid token attempted authentication")
             raise AuthenticationFailed("Токен недействителен")
 
+        user, _ = User.objects.get_or_create(
+            username="system",
+            defaults={"is_active": True, "is_staff": False, "is_superuser": False},
+        )
+
         logger.info("Authenticated successfully")
-        return (UserWrapper(), None)
+
+        return (user, None)
