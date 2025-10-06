@@ -98,9 +98,20 @@ if DEBUG:
 else:
     STATIC_ROOT = BASE_DIR / "staticfiles"
     CORS_ALLOWED_ORIGINS = [
-        "https://myfrontend.com",
-        "https://another-frontend.com",
-        "http://localhost:5173",
+        "https://ресторан-гурман.рф",
+        "https://xn----7sbblh9beecscegov.xn--p1ai",
+        "https://www.ресторан-гурман.рф",
+        "https://www.xn----7sbblh9beecscegov.xn--p1ai",
+        "https://админ.ресторан-гурман.рф",
+        "https://xn--80aimpg.xn----7sbblh9beecscegov.xn--p1ai",
+    ]
+    CSRF_TRUSTED_ORIGINS = [
+        "https://ресторан-гурман.рф",
+        "https://xn----7sbblh9beecscegov.xn--p1ai",
+        "https://www.ресторан-гурман.рф",
+        "https://www.xn----7sbblh9beecscegov.xn--p1ai",
+        "https://админ.ресторан-гурман.рф",
+        "https://xn--80aimpg.xn----7sbblh9beecscegov.xn--p1ai",
     ]
     CORS_ALLOW_CREDENTIALS = True
     CORS_ALLOW_HEADERS = list(default_headers) + ["Authorization"]
