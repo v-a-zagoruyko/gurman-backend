@@ -32,7 +32,7 @@ class TokenAuthentication(BaseAuthentication):
             raise AuthenticationFailed("Неправильный тип токена")
 
         try:
-            auth_token = AuthToken.objects.get(token=token, is_active=True)
+            auth_token = AuthToken.objects.get(token=token)
         except AuthToken.DoesNotExist:
             logger.warning("Invalid token attempted authentication")
             raise AuthenticationFailed("Токен недействителен")
