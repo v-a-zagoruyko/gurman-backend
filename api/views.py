@@ -22,7 +22,7 @@ def menu_by_slug(request, slug):
         logger.warning(f"Меню не найдено: {slug}")
         return Response({"error": f"Меню не найдено: {slug}"}, status=404)
 
-    serializer = MenuSerializer(menu)
+    serializer = MenuSerializer(menu, context={"request":request})
     return Response(serializer.data)
 
 

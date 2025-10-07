@@ -4,6 +4,7 @@ from main.models import Product, Menu
 
 class ProductSerializer(serializers.ModelSerializer):
     category = serializers.SlugRelatedField(read_only=True, slug_field="name")
+    image = serializers.ImageField(use_url=True)
     price = serializers.SerializerMethodField()
 
     class Meta:
