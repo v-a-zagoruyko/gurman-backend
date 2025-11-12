@@ -2,7 +2,7 @@ import uuid
 import factory
 from decimal import Decimal
 from django.utils import timezone
-from main.models import AuthToken, Category, Product, Menu
+from main.models import AuthToken, Category, Product, Menu, MenuItem
 
 
 class AuthTokenFactory(factory.django.DjangoModelFactory):
@@ -24,7 +24,6 @@ class ProductFactory(factory.django.DjangoModelFactory):
 		model = Product
 
 	name = factory.Sequence(lambda n: f"Product {n}")
-	price = Decimal('100.00')
 	category = factory.SubFactory(CategoryFactory)
 	description = "Some description"
 	weight = "1 kg"
@@ -33,15 +32,14 @@ class ProductFactory(factory.django.DjangoModelFactory):
 class MenuFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = Menu
-        skip_postgeneration_save = True
 
     name = factory.Sequence(lambda n: f"Menu {n}")
 
-    @factory.post_generation
-    def products(self, create, extracted, **kwargs):
-        if not create:
-            return
 
-        if extracted:
-            for product in extracted:
-                self.products.add(product)
+class MenuItemFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = MenuItem
+
+    menu = factory.SubFactory(MenuFactory)
+    product = factory.SubFactory(ProductFactory)
+    price = Decimal('100.00')

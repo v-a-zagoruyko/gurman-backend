@@ -42,7 +42,6 @@ class Category(models.Model):
 class Product(models.Model):
     name = models.CharField("Название", max_length=255)
     category = models.ForeignKey(Category, verbose_name="Категория", on_delete=models.PROTECT, related_name="products")
-    price = models.DecimalField("Цена", max_digits=10, decimal_places=2)
     description = models.TextField("Описание", blank=True)
     weight = models.CharField("Вес/кол-во", max_length=50, blank=True)
     image = models.ImageField("Изображение", upload_to="products/", blank=True, null=True)
@@ -53,13 +52,12 @@ class Product(models.Model):
         verbose_name_plural = "Блюда"
 
     def __str__(self):
-        return f"{self.name}: {self.weight}, {self.price}₽"
+        return self.name
 
 
 class Menu(models.Model):
 	name = models.CharField("Название", max_length=255)
 	slug = models.SlugField("Slug", unique=True, blank=True)
-	products = models.ManyToManyField("Product", verbose_name="Блюда", related_name="menus")
 	history = HistoricalRecords()
 
 	class Meta:
@@ -73,3 +71,16 @@ class Menu(models.Model):
 		if not self.slug:
 			self.slug = slugify(self.name)
 		super().save(*args, **kwargs)
+
+
+class MenuItem(models.Model):
+    menu = models.ForeignKey(Menu, verbose_name="Меню", on_delete=models.PROTECT, related_name="items")
+    product = models.ForeignKey(Product, verbose_name="Блюдо", on_delete=models.PROTECT)
+    price = models.DecimalField("Цена", max_digits=10, decimal_places=2)
+
+    class Meta:
+        verbose_name = "Позиция в меню"
+        verbose_name_plural = "Позиция в меню"
+
+    def __str__(self):
+        return f"{self.menu.name}: {self.product.name}"

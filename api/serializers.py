@@ -1,23 +1,25 @@
 from rest_framework import serializers
-from main.models import Product, Menu
-
-
-class ProductSerializer(serializers.ModelSerializer):
-    category = serializers.SlugRelatedField(read_only=True, slug_field="name")
-    image = serializers.ImageField(use_url=True)
-    price = serializers.SerializerMethodField()
-
-    class Meta:
-        model = Product
-        fields = ["id", "name", "description", "weight", "category", "price", "image"]
-
-    def get_price(self, obj):
-        return int(obj.price)
+from main.models import Menu
 
 
 class MenuSerializer(serializers.ModelSerializer):
-	products = ProductSerializer(many=True, read_only=True)
+    products = serializers.SerializerMethodField()
 
-	class Meta:
-		model = Menu
-		fields = ["id", "name", "slug", "products"]
+    class Meta:
+        model = Menu
+        fields = ["id", "name", "slug", "products"]
+
+    def get_products(self, obj):
+        items = obj.items.select_related("product", "product__category").all()
+        return [
+            {
+                "id": item.product.id,
+                "name": item.product.name,
+                "description": item.product.description,
+                "weight": item.product.weight,
+                "category": item.product.category.name if item.product.category else None,
+                "price": int(item.price),
+                "image": item.product.image.url if item.product.image else None,
+            }
+            for item in items
+        ]

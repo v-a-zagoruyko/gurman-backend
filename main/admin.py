@@ -4,7 +4,7 @@ from django.contrib import admin
 from django.utils.html import format_html
 from django.http import HttpResponseRedirect
 from simple_history.admin import SimpleHistoryAdmin
-from .models import AuthToken, TelegramNotification, Category, Product, Menu
+from .models import AuthToken, TelegramNotification, Category, Product, Menu, MenuItem
 
 logger = logging.getLogger(__name__)
 
@@ -57,13 +57,12 @@ class CategoryAdmin(SimpleHistoryAdmin):
     list_display = ["name",]
     search_fields = ["name",]
 
-
 @admin.register(Product)
 class ProductAdmin(SimpleHistoryAdmin):
-    list_display = ["image_preview", "name", "category", "price", "weight"]
+    list_display = ["image_preview", "name", "category", "weight"]
     list_filter = ["category",]
     search_fields = ["name",]
-    fields = ["name", "category", "price", "weight", "description", "image", "image_preview_large"]
+    fields = ["name", "category", "weight", "description", "image", "image_preview_large"]
     readonly_fields = ["image_preview_large",]
 
     @admin.display(description="Изображение")
@@ -78,9 +77,15 @@ class ProductAdmin(SimpleHistoryAdmin):
             return format_html('<img src="{}" style="height: 200px;"/>', obj.image.url)
         return "-"
 
+class MenuItemInline(admin.TabularInline):
+    model = MenuItem
+    fields = ["product", "price"]
+    extra = 1
+    can_delete = False
+
 @admin.register(Menu)
 class MenuAdmin(SimpleHistoryAdmin):
     list_display = ["name", "slug"]
     prepopulated_fields = {"slug": ("name",)}
     search_fields = ["name"]
-    filter_horizontal = ["products"]
+    inlines = [MenuItemInline,]

@@ -1,7 +1,7 @@
 import pytest
 from django.urls import reverse
 from rest_framework import status
-from .factories import MenuFactory, ProductFactory
+from .factories import MenuFactory, MenuItemFactory, ProductFactory
 
 
 @pytest.mark.django_db
@@ -17,18 +17,19 @@ def test_menu_by_slug_not_found(auth_client):
 
 @pytest.mark.django_db
 def test_menu_by_slug_success(auth_client):
+    menu = MenuFactory()
     product1 = ProductFactory()
     product2 = ProductFactory()
-    menu = MenuFactory(products=[product1, product2])
+    MenuItemFactory(menu=menu, product=product1, price=150)
+    MenuItemFactory(menu=menu, product=product2, price=250)
 
     url = reverse("menu-by-slug", kwargs={"slug": menu.slug})
     response = auth_client.get(url)
 
     assert response.status_code == status.HTTP_200_OK
     data = response.json()
+
     assert data["name"] == menu.name
     assert data["slug"] == menu.slug
     assert len(data["products"]) == 2
-    product_ids = [p["id"] for p in data["products"]]
-    assert product1.id in product_ids
-    assert product2.id in product_ids
+    assert {p["price"] for p in data["products"]} == {150, 250}
