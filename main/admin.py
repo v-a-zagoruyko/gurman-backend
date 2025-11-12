@@ -80,7 +80,8 @@ class ProductAdmin(SimpleHistoryAdmin):
 class MenuItemInline(admin.TabularInline):
     model = MenuItem
     fields = ["product", "price"]
-    extra = 1
+    autocomplete_fields = ["product"]
+    extra = 0
     can_delete = False
 
 @admin.register(Menu)
