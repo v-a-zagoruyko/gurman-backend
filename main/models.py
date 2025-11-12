@@ -52,7 +52,7 @@ class Product(models.Model):
         verbose_name_plural = "Блюда"
 
     def __str__(self):
-        return self.name
+        return f"{self.name}, {self.weight}"
 
 
 class Menu(models.Model):
