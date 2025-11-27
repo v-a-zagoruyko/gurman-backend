@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from main.models import Menu
+from django.conf import settings
 
 
 class MenuSerializer(serializers.ModelSerializer):
@@ -10,7 +11,6 @@ class MenuSerializer(serializers.ModelSerializer):
         fields = ["id", "name", "slug", "products"]
 
     def get_products(self, obj):
-        request = self.context.get("request")
         items = obj.items.select_related("product", "product__category").all()
         return [
             {
@@ -20,7 +20,7 @@ class MenuSerializer(serializers.ModelSerializer):
                 "weight": item.product.weight,
                 "category": item.product.category.name if item.product.category else None,
                 "price": int(item.price),
-                "image": request.build_absolute_uri(item.product.image.url) if item.product.image else None,
+                "image": f"{settings.MEDIA_HOST}{item.product.image.url}" if item.product.image else None,
             }
             for item in items
         ]
